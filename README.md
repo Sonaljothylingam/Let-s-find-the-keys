@@ -7,7 +7,7 @@ void setup()
 }
 
 
-void loop() 
+void loop()
 {
    
     tone(buzzer,261);    
