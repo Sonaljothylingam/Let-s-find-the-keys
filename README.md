@@ -2,7 +2,7 @@
 int buzzer = 5;
 void setup() 
 {
-    r
+    
     pinMode(buzzer,OUTPUT);    
 }
 
