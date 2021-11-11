@@ -1,0 +1,95 @@
+
+#include "Arduino.h"
+#include "Buzzer.h"
+#include "RFID.h"
+
+
+#define BUZZER_PIN_SIG	2
+#define RFID_PIN_RST	3
+#define RFID_PIN_SDA	10
+
+
+
+Buzzer buzzer(BUZZER_PIN_SIG);
+RFID rfid(RFID_PIN_SDA,RFID_PIN_RST);
+
+
+
+const int timeout = 10000;       
+char menuOption = 0;
+long time0;
+
+
+void setup() 
+{
+   
+    Serial.begin(9600);
+    while (!Serial) ; 
+    Serial.println("start");
+    
+   
+    rfid.init();
+    menuOption = menu();
+    
+}
+
+
+void loop() 
+{
+    
+    
+    if(menuOption == '1') {
+    
+    buzzer.on();       
+    delay(500);             
+    buzzer.off();      
+    delay(500);        
+    }
+    else if(menuOption == '2') {
+   
+    String rfidtag = rfid.readTag();
+    
+    rfid.printTag(rfidtag);
+
+    }
+    
+    if (millis() - time0 > timeout)
+    {
+        menuOption = menu();
+    }
+    
+}
+
+
+
+
+char menu()
+{
+
+    Serial.println(F("\nWhich component would you like to test?"));
+    Serial.println(F("(1) Buzzer"));
+    Serial.println(F("(2) RFID Card Reader - RC522"));
+    Serial.println(F("(menu) send anything else or press on board reset button\n"));
+    while (!Serial.available());
+
+    
+    while (Serial.available()) 
+    {
+        char c = Serial.read();
+        if (isAlphaNumeric(c)) 
+        {   
+            
+            if(c == '1') 
+    			Serial.println(F("Now Testing Buzzer"));
+    		else if(c == '2') 
+    			Serial.println(F("Now Testing RFID Card Reader - RC522"));
+            else
+            {
+                Serial.println(F("illegal input!"));
+                return 0;
+            }
+            time0 = millis();
+            return c;
+        }
+    }
+}
